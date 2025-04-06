@@ -1,246 +1,96 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-   <meta charset="UTF-8">
-   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-   <title>生日快乐 - 专属祝福</title>
-   <style>
-       body {
-           margin: 0;
-           overflow: hidden; /* 隐藏滚动条，防止页面内容超出屏幕 */
-           font-family: 'Arial', sans-serif;
-           /* 梦幻星空背景 */
-           background: linear-gradient(to bottom, #1a2a6c, #b21f1f, #fca311);
-           /* 动画背景 */
-           animation: gradientAnimation 15s ease infinite;
-       }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生日快乐！</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #fce4ec; /* 淡粉色背景 */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
 
-       /* 定义背景渐变动画 */
-       @keyframes gradientAnimation {
-           0% {
-               background-position: 0% 50%; /* 初始位置 */
-           }
-           50% {
-               background-position: 100% 50%; /* 中间位置 */
-           }
-           100% {
-               background-position: 0% 50%; /* 结束位置 */
-           }
-       }
+        h1 {
+            color: #e91e63; /* 亮粉色标题 */
+            font-size: 3em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
 
-       canvas {
-           display: block; /* 确保 canvas 元素以块级元素显示 */
-       }
-   </style>
+        p {
+            color: #777;
+            font-size: 1.2em;
+            margin-bottom: 30px;
+        }
+
+        .birthday-button {
+            background-color: #ff4081; /* 按钮背景色 */
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.2em;
+            cursor: pointer;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+            transition: background-color 0.3s ease;
+        }
+
+        .birthday-button:hover {
+            background-color: #f50057; /* 悬停时颜色加深 */
+        }
+
+        /* 添加一些小装饰 */
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #f06292;
+            animation: confettiFall 3s linear infinite;
+        }
+
+        .confetti:nth-child(even) {
+            background-color: #ba68c8;
+        }
+
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+            }
+        }
+    </style>
 </head>
-<body style="margin: 0;">
-   <!-- canvas 元素，用于绘制动画 -->
-   <canvas id="cvs"></canvas>
+<body>
 
-   <script>
-       // 获取 canvas 元素
-       const cvs = document.getElementById('cvs');
-       // 设置 canvas 宽度为浏览器窗口宽度
-       cvs.width = document.documentElement.clientWidth;
-       // 设置 canvas 高度为浏览器窗口高度
-       cvs.height = document.documentElement.clientHeight;
-       // 获取 canvas 的 2D 渲染上下文
-       const ctx = cvs.getContext('2d');
-       // 获取 canvas 的宽度和高度
-       const { width, height } = cvs;
+    <h1>生日快乐！</h1>
+    <p>祝宝宝今天充满快乐和惊喜！</p>
 
-       // 用于存储文字像素点的位置信息
-       let colors = [];
+    <button class="birthday-button" onclick="goToBirthdayPage()">查看专属祝福</button>
 
-       // 飘落的星星粒子效果
-       const bgData = Array.from(new Array(400)).map(v => {
-           return {
-               x: Math.random() * width, // 随机 x 坐标
-               y: Math.random() * height, // 随机 y 坐标
-               step: Math.random() * 2.5 + 0.5 // 随机移动步长
-           }
-       });
+    <script>
+        function goToBirthdayPage() {
+            window.location.href = './index.html'; // 替换为你的链接
+        }
 
-       // 气球粒子效果
-       const balloons = Array.from(new Array(30)).map(() => ({
-           x: Math.random() * width, // 随机 x 坐标
-           y: height + Math.random() * 100, // 初始 y 坐标在 canvas 底部之外
-           radius: Math.random() * 20 + 10, // 随机半径
-           color: `hsla(${Math.random() * 360}, 70%, 70%, 0.8)`, // 随机颜色
-           speed: Math.random() * 1.5 + 0.5 // 随机上升速度
-       }));
+        // 添加一些彩带
+        for (let i = 0; i < 50; i++) {
+            let confetti = document.createElement('div');
+            confetti.classList.add('confetti');
+            confetti.style.left = Math.random() * 100 + 'vw';
+            confetti.style.animationDelay = Math.random() * 3 + 's';
+            document.body.appendChild(confetti);
+        }
+    </script>
 
-       // 自定义字体大小
-       const fontSize = Math.min(width, height) / 8;
-
-       /**
-        * 将文字绘制到 canvas 上，并提取文字像素点的位置信息
-        * @param {string} text 要绘制的文字
-        * @param {number} fontSize 字体大小
-        * @param {number} stepV  移动速度
-        */
-       const sendText = (text, fontSizeArg = ((width * 0.7) / text.length), stepV = 40) => {
-           const fontSize = Math.min(fontSizeArg, Math.min(width, height) /5); // 限制字体大小，避免超出屏幕
-           ctx.font = `bold ${fontSize}px 微软雅黑`; // 设置字体样式
-           ctx.fillStyle = '#000000'; // 设置填充颜色为黑色
-           ctx.fillRect(0, 0, width, height); // 填充背景为黑色
-           ctx.fillStyle = '#FFD700'; // 设置填充颜色为金色
-           ctx.textAlign = 'center'; // 设置文字水平居中
-           ctx.textBaseline = 'middle'; // 设置文字垂直居中
-
-           // 文字描边
-           ctx.strokeStyle = '#b8860b'; // 设置描边颜色为暗金色
-           ctx.lineWidth = 2; // 设置描边宽度
-           ctx.strokeText(text, width / 2, height / 2); // 绘制描边文字
-
-           ctx.fillText(text, width / 2, height / 2); // 绘制文字
-           const data = ctx.getImageData(0, 0, width, height).data; // 获取 canvas 上的像素数据
-
-           let index = 0; // 像素索引
-           let bl = 5; // 降低像素密度，提高性能和可读性
-           let useIndex = 0; // 用于记录有效像素点的数量
-           // 遍历像素数据
-           for (let i = 0; i < data.length; i += 4) {
-               const x = index % width; // 计算像素点的 x 坐标
-               const y = Math.ceil(index / width); // 计算像素点的 y 坐标
-               // 如果像素点在采样间隔内，且颜色不是黑色
-               if (x % bl === 0 && y % bl === 0 && data[i] > 0) { // 修改判断条件，适应金色文字
-                   // 计算随机偏移量
-                   const rx = Math.floor(Math.random() * fontSize * 0.6) + width / 2 - fontSize * 0.3; // 随机 x 偏移
-                   const ry = Math.floor(Math.random() * fontSize * 0.6) + height / 2 - fontSize * 0.3; // 随机 y 偏移
-                   const item = colors[useIndex]; // 获取 colors 数组中对应位置的像素点信息
-                   if (item) {
-                       // 如果存在，则更新像素点信息
-                       colors[useIndex] = {
-                           x, // 目标 x 坐标
-                           y, // 目标 y 坐标
-                           rx: item.x, // 当前 x 坐标
-                           ry: item.y, // 当前 y 坐标
-                           stepX: Math.abs(item.x - x) / stepV, // 计算 x 轴移动步长
-                           stepY: Math.abs(item.y - y) / stepV, // 计算 y 轴移动步长
-                           color: '#FFD700' // 使用固定颜色，提高可读性
-                       };
-                   } else {
-                       // 如果不存在，则创建新的像素点信息
-                       colors[useIndex] = {
-                           x, // 目标 x 坐标
-                           y, // 目标 y 坐标
-                           rx, // 当前 x 坐标
-                           ry, // 当前 y 坐标
-                           stepX: Math.abs(rx - x) / stepV, // 计算 x 轴移动步长
-                           stepY: Math.abs(ry - y) / stepV, // 计算 y 轴移动步长
-                           color: '#FFD700' // 使用固定颜色，提高可读性
-                       };
-                   }
-                   useIndex++; // 有效像素点数量加 1
-               }
-               index++; // 像素索引加 1
-           }
-           // 如果有效像素点数量小于 colors 数组的长度，则删除多余的像素点信息
-           if (useIndex < colors.length) {
-               colors.splice(useIndex, colors.length - useIndex);
-           }
-       };
-
-       /**
-        * 渲染函数，用于绘制动画
-        */
-       const render = () => {
-           ctx.clearRect(0, 0, width, height); // 清空 canvas
-
-           // 绘制背景星星
-           bgData.forEach(v => {
-               v.y = v.y > height ? 0 : (v.y + v.step); // 更新 y 坐标
-               ctx.fillStyle = `rgba(255, 255, 255, 0.6)`; // 设置填充颜色
-               ctx.fillRect(v.x, v.y, 2, 2); // 绘制矩形
-           });
-
-           // 绘制气球
-           balloons.forEach(balloon => {
-               balloon.y -= balloon.speed; // 更新 y 坐标
-               if (balloon.y < -balloon.radius) {
-                   // 如果气球超出 canvas 顶部，则重置位置
-                   balloon.y = height + balloon.radius;
-                   balloon.x = Math.random() * width;
-               }
-               ctx.beginPath(); // 开始一个新的路径
-               ctx.arc(balloon.x, balloon.y, balloon.radius, 0, Math.PI * 2); // 绘制圆形气球
-               ctx.fillStyle = balloon.color; // 设置填充颜色
-               ctx.fill(); // 填充气球
-           });
-
-           // 绘制文字粒子
-           colors.forEach(v => {
-               // 如果当前 x 坐标大于目标 x 坐标
-               if (v.rx > v.x) {
-                   v.rx -= v.stepX; // 向左移动
-                   if (v.rx < v.x) {
-                       v.rx = v.x; // 如果超出目标位置，则设置为目标位置
-                   }
-                   // 如果当前 x 坐标小于目标 x 坐标
-               } else if (v.rx < v.x) {
-                   v.rx += v.stepX; // 向右移动
-                   if (v.rx > v.x) {
-                       v.rx = v.x; // 如果超出目标位置，则设置为目标位置
-                   }
-               }
-               // 如果当前 y 坐标大于目标 y 坐标
-               if (v.ry > v.y) {
-                   v.ry -= v.stepY; // 向上移动
-                   if (v.ry < v.y) {
-                       v.ry = v.y; // 如果超出目标位置，则设置为目标位置
-                   }
-                   // 如果当前 y 坐标小于目标 y 坐标
-               } else if (v.ry < v.y) {
-                   v.ry += v.stepY; // 向下移动
-                   if (v.ry > v.y) {
-                       v.ry = v.y; // 如果超出目标位置，则设置为目标位置
-                   }
-               }
-               ctx.fillStyle = v.color; // 设置填充颜色
-               ctx.fillRect(v.rx, v.ry, 3, 3); // 绘制矩形
-           });
-
-           requestAnimationFrame(render); // 请求下一帧动画
-       };
-
-       render(); // 启动渲染函数
-
-       /**
-        * 异步发送文字
-        * @param {string} txt 要发送的文字
-        * @param {number} fontSize 字体大小
-        * @param {number} stepV  移动速度
-        * @returns {Promise<void>}
-        */
-       const awaitSendText = async (txt, fontSize, stepV) => {
-           return new Promise((resolve) => {
-               sendText(txt, fontSize, stepV); // 发送文字
-               colors.sort(v => Math.random() - 0.5); // 随机排序像素点
-               setTimeout(() => resolve(), 2000 + (stepV > 40 ? 1000 : 0)); // 等待一段时间后 resolve
-           });
-       };
-
-       /**
-        * 运行函数，用于控制动画流程
-        */
-       const run = async () => {
-           const text = [
-               '萱萱 Happy Birthday!',
-               '宝宝生日快乐！',
-               '愿你每天都充满阳光，',
-               '愿你所有的梦想都实现，',
-               '愿你永远幸福快乐！'
-           ];
-           // 循环显示文字
-           for (let i = 0; i < text.length; i++) {
-               await awaitSendText(text[i], 150, i === 0 ? 100 : 40); // 异步发送文字
-           }
-           run(); // 循环运行
-       };
-
-       run(); // 启动动画
-   </script>
 </body>
 </html>
